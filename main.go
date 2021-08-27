@@ -16,8 +16,13 @@ type Product struct {
 	Price uint
 }
 
+var u = utter.ConfigState{
+	Indent:           "  ",
+	IgnoreUnexported: true,
+}
+
 func msg(msg string, product *Product) {
-	fmt.Printf("%s: %s\n", msg, utter.Sdump(product))
+	fmt.Printf("%s: %s\n", msg, u.Sdump(product))
 }
 
 func main() {
