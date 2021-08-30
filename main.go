@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/kortschak/utter"
 	"gorm.io/driver/sqlite"
@@ -25,7 +26,24 @@ func msg(msg string, product *Product) {
 	fmt.Printf("%s: %s\n", msg, u.Sdump(product))
 }
 
-func main() {
+func displayTags() {
+	product := Product{}
+
+	println("Model tags {")
+	modelTy := reflect.TypeOf(product.Model)
+	for i := 0; i < modelTy.NumField(); i++ {
+		field := modelTy.Field(i)
+		fmt.Printf("  %s = %+v\n", field.Name, field.Tag)
+	}
+	println("}")
+
+	productTy := reflect.TypeOf(product)
+	if field, found := productTy.FieldByName("ID"); found {
+		fmt.Println("GORM tags for ID: ", field.Tag.Get("gorm"))
+	}
+}
+
+func gormTest() {
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
@@ -61,4 +79,9 @@ func main() {
 	// Delete - delete product
 	db.Delete(&product, 1)
 	msg("Deleted id 1", &product)
+}
+
+func main() {
+	displayTags()
+	gormTest()
 }
